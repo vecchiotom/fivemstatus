@@ -44,6 +44,8 @@ app.get('/chart', (req,res) => {
   const options = {width: 600, height: 120,
   
   showGridBackground: true,
+  high: 5000,
+  low: 0,
   
   axisX: {
     showLabel: true,
