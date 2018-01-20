@@ -1,0 +1,50 @@
+body {
+        height: 100vh;
+        margin: 0;
+        font-family: 'Roboto', sans-serif;
+        background-color: #333;
+        color: #bbb;
+      }
+      p {
+        font-size: 15px;
+      }
+
+      .statuses {
+        padding-bottom: 0.5em;
+      }
+
+      .wrapper {
+        width: 100%;
+        height: 100%;
+        display: relative;
+        align-items: center;
+        justify-content: center;
+        clear: both;
+      }
+
+      .app {
+        text-align: center;
+      }
+
+      .header {
+        color: #ddd;
+        font-weight: bold;
+      }
+
+      .footer {
+        color: #666;
+      }
+      
+       .sizer {
+        width: 33%;
+       height: 92px;
+       margin-top: -32px
+       }
+       #btgn {
+      position: sticky;
+      float: right;
+      right: 30px;
+      top: 50px;
+
+    }  
+    

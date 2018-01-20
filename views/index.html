@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FiveM Status Page</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script src="jquery-3.2.1.min.js"></script>
+
+    <script type="text/javascript">
+  
+  </script>
+ <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+ <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+   <link type="text/css" rel="stylesheet" media="all" href="/dark.css" id="themecss">
+    <script type="text/javascript">
+      $(function() {
+  document.getElementById('btgn').onclick = function () { 
+    if ($("#themecss").attr("href") == "/light.css"){
+      $("#themecss").attr("href",'/dark.css')
+      $("#btgn").text('Light Theme')
+    } else {
+      $("#themecss").attr("href",'/light.css')
+      $("#btgn").text('Dark Theme')
+    }
+    
+};
+});
+
+
+$.get("/json", (data) => {
+          var html = "";
+          var charts = ""
+          for (var i = data.length - 1; i >= 0; i--) {
+            var pie
+            jQuery.ajax({
+        url: '/pie?file='+ encodeURI(data[i].name),
+        success: function (result) {
+            console.log(result)
+            pie= result
+        },
+        async: false
+    });
+         
+            if (data[i].status == "Online") {
+html= html + "<p>" + data[i].name + ": <span style = 'color:green'>" + data[i].status + "</span>, Response Time: " + data[i].time + "<center><p>Uptime: "+Math.round( ((pie.uptime * 100)/(pie.uptime + pie.downtime)) * 10 ) / 10+"% Downtime: "+Math.round( ((pie.downtime * 100)/(pie.uptime + pie.downtime)) * 10 ) / 10+"% </p><div class='sizer'><div class='embed-responsive embed-responsive-4by3'><iframe src='" + encodeURI('http://localhost:5000/chart?file=' + data[i].name)+"' scrolling='no' frameborder='0'></iframe></div></div></div></center>"   
+          } else {
+html= html + "<p>" + data[i].name + ": <span style = 'color:green'>" + data[i].status + "</span>, Response Time: " + data[i].time + "<center><p>Uptime: "+Math.round( ((pie.uptime * 100)/(pie.uptime + pie.downtime)) * 10 ) / 10+"% Downtime: "+Math.round( ((pie.downtime * 100)/(pie.uptime + pie.downtime)) * 10 ) / 10+"% </p><div class='sizer'><div class='embed-responsive embed-responsive-4by3'><iframe src='" + encodeURI('http://localhost:5000/chart?file=' + data[i].name)+"' scrolling='no' frameborder='0'></iframe></div></div></div></center>"   
+}   
+
+           
+
+  
+          }
+          
+         $(".statuses").html(html);
+
+        })
+      setInterval(() => {
+
+
+// Call to function with anonymous callback
+
+        $.get("/json", (data) => {
+          var html = "";
+          var html = "";
+          var charts = "";
+          var pie
+          for (var i = data.length - 1; i >= 0; i--) {
+
+            jQuery.ajax({
+        url: '/pie?file='+ encodeURI(data[i].name),
+        success: function (result) {
+            console.log(result)
+            pie= result
+        },
+        async: false
+    });
+            
+             
+if (data[i].status == "Online") {
+html= html + "<p>" + data[i].name + ": <span style = 'color:green'>" + data[i].status + "</span>, Response Time: " + data[i].time + "<center><p>Uptime: "+Math.round( ((pie.uptime * 100)/(pie.uptime + pie.downtime)) * 10 ) / 10+"% Downtime: "+Math.round( ((pie.downtime * 100)/(pie.uptime + pie.downtime)) * 10 ) / 10+"% </p><div class='sizer'><div class='embed-responsive embed-responsive-4by3'><iframe src='" + encodeURI('http://localhost:5000/chart?file=' + data[i].name)+"' scrolling='no' frameborder='0'></iframe></div></div></div></center>"   
+          } else {
+html= html + "<p>" + data[i].name + ": <span style = 'color:green'>" + data[i].status + "</span>, Response Time: " + data[i].time + "<center><p>Uptime: "+Math.round( ((pie.uptime * 100)/(pie.uptime + pie.downtime)) * 10 ) / 10+"% Downtime: "+Math.round( ((pie.downtime * 100)/(pie.uptime + pie.downtime)) * 10 ) / 10+"% </p><div class='sizer'><div class='embed-responsive embed-responsive-4by3'><iframe src='" + encodeURI('http://localhost:5000/chart?file=' + data[i].name)+"' scrolling='no' frameborder='0'></iframe></div></div></div></center>"   
+}  
+           
+
+  
+          } 
+          $(".statuses").html(html);
+          
+
+        })
+      }, 30000)
+    </script>
+  </head>
+  <body>
+    <button type="button" class="btn btn-outline-primary active" id="btgn" >Dark Theme</button>
+    <div class="wrapper">
+      <div class="app">
+        <h1 class="header">FiveM Status Page</h1>
+        <div class="statuses">
+          
+        </div>
+        <p class="footer">This website is not related to the FiveM team.</p>
+        <p class="footer">Backend by IceHax and Frontend by Amorris and IceHax</p>
+        <a class="footer" style="text-decoration: underline" href="https://github.com/BeeCodingOfc/fivemstatus">Source Code</a>
+      </div>
+    </div>
+
+    <!-- This should probably be in a separate file, but meh. -->
+    
+  </body>
+</html>

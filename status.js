@@ -1,26 +1,82 @@
 const request = require('request');
 const { forEach } = require('p-iteration');
+const fs = require('fs')
 
-var status = [];
-var ready = false;
+var online = "<span style='color: " + "#70ff8a" + "'>Online</span>";
+var offline = "<span style='color: " + "#ff7070" + "'>Offline</span>";
+var disrupted = "<span style='color: " + "#f2e05c" + "'>Disrupted</span>";
 
-var servers = [["https://fivem.net/", "Main Webserver"], ["https://servers.fivem.net/", "Server List"], ["https://servers-live.fivem.net/api/servers/proto", "Server API"], ["https://runtime.fivem.net/", "Runtime"], ["https://metrics.fivem.net/", "Metrics", (e, r, b) => {return(!e && b.includes("Matomo"))}], ["https://forum.fivem.net/", "Forums", (e, r, b) => {return(!e && b.includes("hidden-login-form"))}], ["https://wiki.fivem.net/", "Wiki"], ["https://keymaster.fivem.net/", "Keymaster Server"], ["https://lambda.fivem.net/", "Lambda"], ["http://crashes.fivem.net/", "Crash server"]];
 
+var servers = [["https://fivem.net/", "Main Webserver"], ["https://servers.fivem.net/", "Server List"], ["https://servers-live.fivem.net/", "Server API", (e, r, b) => {return(!e && !b.includes("Error") && !b.includes("a padding to disable MSIE and Chrome friendly error page"))}], ["https://runtime.fivem.net/", "Runtime"], ["https://metrics.fivem.net/", "Metrics", (e, r, b) => {return(!e && b.includes("Matomo"))}], ["https://forum.fivem.net/", "Forums", (e, r, b) => {return(!e && b.includes("hidden-login-form"))}], ["https://wiki.fivem.net/", "Wiki"], ["https://keymaster.fivem.net/", "Keymaster Server"], ["https://lambda.fivem.net","Lambda Server"]];
 function poll() {
-  tmpstatus = [];
+  var tmpstatus = []
+
   forEach(servers, async (server, i) => {
-    request(server[0], {timeout: 5000, time : true}, function (error, response, body) {
+
+    await request({url:server[0], time : true}, function (error, response, body) {
+      var json = JSON.parse(fs.readFileSync("./public/"+server[1] + '_time.json'))
+      var json2 = JSON.parse(fs.readFileSync("./public/"+server[1] + '_up.json'))
+      
       if (server[2]) {
         if (server[2](error, response, body)) {
-          tmpstatus.push([server[1], "<span style='color: " + "#70ff8a" + "'>Online (" + response.elapsedTime + "ms)</span>", i]);
+          if (response.elapsedTime >= 5000){
+            tmpstatus.push({name:server[1], status:disrupted, time: response.elapsedTime });
+          } else {
+          tmpstatus.push({name:server[1], status:online, time: response.elapsedTime });
+        }
+          json.push(response.elapsedTime)
+          json2.push(1)
+          fs.writeFile("./public/"+server[1] + '_time.json', JSON.stringify(json), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+          });
+          fs.writeFile("./public/"+server[1] + '_up.json', JSON.stringify(json2), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+          });
+
         } else {
-          tmpstatus.push([server[1], "<span style='color: " + "#ff7070" + "'>Offline</span>", i]);
+          tmpstatus.push({name:server[1], status:offline, time: "--" });
+          json.push(null)
+          json2.push(0)
+          fs.writeFile("./public/"+server[1] + '_time.json', JSON.stringify(json), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+          });
+          fs.writeFile("./public/"+server[1] + '_up.json', JSON.stringify(json2), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+          });
         }
       } else {
-        if (!error && !body.includes("Error") && (response.statusCode == 200 || response.statusCode == 404)) {
-          tmpstatus.push([server[1], "<span style='color: " + "#70ff8a" + "'>Online (" + response.elapsedTime + "ms)</span>", i]);
+        if (!error && !body.includes("Error")) {
+          if (response.elapsedTime >= 5000){
+            tmpstatus.push({name:server[1], status:disrupted, time: response.elapsedTime });
+          } else {
+          tmpstatus.push({name:server[1], status:online, time: response.elapsedTime });
+        }
+          json.push(response.elapsedTime)
+          json2.push(1)
+          fs.writeFile("./public/"+server[1] + '_time.json', JSON.stringify(json), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+          });
+          fs.writeFile("./public/"+server[1] + '_up.json', JSON.stringify(json2), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+          });
         } else {
-          tmpstatus.push([server[1], "<span style='color: " + "#ff7070" + "'>Offline</span>", i]);
+          tmpstatus.push({name:server[1], status:offline, time: "--" });
+          json.push(null)
+          json2.push(0)
+          fs.writeFile("./public/"+server[1] + '_time.json', JSON.stringify(json), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+          });
+          fs.writeFile("./public/"+server[1] + '_up.json', JSON.stringify(json2), (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+          });
         }
       }
       if (tmpstatus.length == servers.length) {
@@ -36,10 +92,12 @@ function poll() {
       }
     });
   })
+  
 }
 
 function start() {
   poll();
+  
   setInterval(poll, 60000);
 }
 
