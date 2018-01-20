@@ -3,7 +3,7 @@ This is actually a fork of https://github.com/heroku/node-js-getting-started bec
 
 For lazy people
 ======
-Just use http://fivemstatus.icehax.it/
+Just use http://fivemstatus.herokuapp.com/
 
 For Hackers™
 ======
